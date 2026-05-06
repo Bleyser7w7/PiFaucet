@@ -92,7 +92,7 @@ async function logActivity(action, userId, meta) {
   try {
     await pool.query(
         'INSERT INTO activity_logs (action, user_id, meta) VALUES ($1, $2, $3)',
-        [action, userId, meta ? JSON.stringify(meta) : null],
+        [action, userId, meta || null],
     );
   } catch (e) {
     console.error('logActivity', e);
