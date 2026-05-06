@@ -1,0 +1,9 @@
+node_modules/
+.env
+.DS_Store
+Thumbs.db
+*.log
+
+# Si quedó restos de Firebase o de la carpeta antigua functions
+.firebase/
+functions/

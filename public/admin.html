@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pi Faucet — Administración</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="toast-host" aria-live="polite"></div>
+    <div class="layout">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">π</div>
+          <span>Pi Faucet — Admin</span>
+        </div>
+        <nav class="nav">
+          <a href="dashboard.html">Panel</a>
+          <a href="withdrawals.html">Retiros</a>
+          <a href="admin.html" class="active">Admin</a>
+          <button type="button" class="link" id="btn-logout">Salir</button>
+        </nav>
+      </header>
+
+      <div id="admin-denied" class="card hidden">
+        <h2>Acceso denegado</h2>
+        <p class="muted">Necesitas rol <code>admin</code> en la base de datos (<code>users.role</code>) o ser el primer usuario registrado.</p>
+        <a href="dashboard.html" class="btn btn-ghost">Volver al panel</a>
+      </div>
+
+      <div id="admin-content" class="hidden">
+        <div class="stats-row">
+          <div class="stat">
+            Usuarios
+            <strong id="st-users">0</strong>
+          </div>
+          <div class="stat">
+            Total π reclamado (histórico)
+            <strong id="st-pi">0</strong>
+          </div>
+          <div class="stat">
+            Retiros pendientes
+            <strong id="st-pend">0</strong>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 20px">
+          <h2>Retiros pendientes</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Usuario (UID)</th>
+                  <th>Pi username</th>
+                  <th>Cantidad</th>
+                  <th>Fecha</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="pend-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Usuarios</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>UID</th>
+                  <th>Email</th>
+                  <th>Rol</th>
+                  <th>Balance (π)</th>
+                  <th>Alta</th>
+                </tr>
+              </thead>
+              <tbody id="users-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/admin-page.js"></script>
+  </body>
+</html>

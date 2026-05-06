@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pi Faucet — Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="toast-host" aria-live="polite"></div>
+    <div class="layout">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">π</div>
+          <span>Pi Faucet</span>
+        </div>
+        <nav class="nav">
+          <a href="dashboard.html" class="active">Panel</a>
+          <a href="withdrawals.html">Retiros</a>
+          <a href="admin.html" id="nav-admin" class="hidden">Admin</a>
+          <button type="button" class="link" id="btn-logout">Salir</button>
+        </nav>
+      </header>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <span class="pill">Saldo simulado</span>
+          <h2>Tu balance</h2>
+          <p class="balance-display"><span id="balance-val">0.0000</span> π</p>
+          <p class="muted">Último reclamo: <span id="last-claim">—</span></p>
+        </div>
+        <div class="card">
+          <h2>Reclamar Pi</h2>
+          <p class="muted">Cooldown 10 min. Recompensa aleatoria entre 0.01 y 0.05 π.</p>
+          <input class="honeypot" type="text" id="claim-hp" tabindex="-1" autocomplete="off" />
+          <div class="timer" id="claim-timer" aria-live="polite">Listo para reclamar</div>
+          <button type="button" class="btn btn-primary" id="btn-claim" style="width: 100%">
+            Reclamar Pi
+          </button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 20px">
+        <h2>Historial de reclamos</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Cantidad (π)</th>
+                <th>IP (registro)</th>
+              </tr>
+            </thead>
+            <tbody id="claims-body">
+              <tr>
+                <td colspan="3" class="muted">Cargando…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="footer-note">
+        Anti-bot: campo trampa en reclamo; puedes añadir reCAPTCHA y validarlo en <code>POST /api/claim</code>.
+      </p>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/dashboard.js"></script>
+  </body>
+</html>

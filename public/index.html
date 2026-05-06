@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pi Faucet — Entrar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="toast-host" aria-live="polite"></div>
+    <div class="layout">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">π</div>
+          <span>Pi Faucet <span class="muted" style="font-weight: 400">(simulado)</span></span>
+        </div>
+      </header>
+
+      <div class="grid" style="max-width: 440px; margin: 0 auto">
+        <div class="card">
+          <div class="tabs">
+            <button type="button" class="tab active" id="tab-login">Iniciar sesión</button>
+            <button type="button" class="tab" id="tab-register">Registro</button>
+          </div>
+
+          <form id="form-login" class="form" autocomplete="on">
+            <div>
+              <label for="login-email">Email</label>
+              <input id="login-email" type="email" required />
+            </div>
+            <div>
+              <label for="login-pass">Contraseña</label>
+              <input id="login-pass" type="password" required minlength="6" />
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%">Entrar</button>
+          </form>
+
+          <form id="form-register" class="form hidden" autocomplete="on">
+            <div>
+              <label for="reg-email">Email</label>
+              <input id="reg-email" type="email" required />
+            </div>
+            <div>
+              <label for="reg-pass">Contraseña (mín. 6)</label>
+              <input id="reg-pass" type="password" required minlength="6" />
+            </div>
+            <div>
+              <label for="reg-referrer">Referido opcional (UUID del invitador)</label>
+              <input id="reg-referrer" type="text" placeholder="Opcional" />
+            </div>
+            <input class="honeypot" type="text" id="reg-bot-field" tabindex="-1" autocomplete="off" />
+            <button type="submit" class="btn btn-primary" style="width: 100%">Crear cuenta</button>
+          </form>
+        </div>
+        <p class="footer-note">
+          Moneda Pi simulada solo para demostración. Listo para sustituir por integración real cuando exista API oficial estable.
+        </p>
+      </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/auth-page.js"></script>
+  </body>
+</html>
