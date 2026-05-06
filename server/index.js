@@ -5,6 +5,7 @@
 
 require('dotenv').config();
 
+const crypto = require('crypto');
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
@@ -19,18 +20,45 @@ const MIN_WITHDRAWAL_PI = 1;
 const REFERRAL_BONUS_REFERRED = 0.05;
 const REFERRAL_BONUS_REFERRER = 0.02;
 
-const JWT_SECRET = process.env.JWT_SECRET;
 const onRailway = !!(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID);
 const isProd = process.env.NODE_ENV === 'production' || onRailway;
-if (!JWT_SECRET || JWT_SECRET.length < 16) {
-  if (isProd) {
+
+/**
+ * Secreto JWT: variable JWT_SECRET (recomendado) o, en Railway con DB ya enlazada,
+ * derivación estable desde la URL de Postgres para que el servicio arranque sin paso extra.
+ */
+function resolveJwtSecret() {
+  const fromEnv = process.env.JWT_SECRET;
+  if (fromEnv && String(fromEnv).trim().length >= 16) {
+    return String(fromEnv).trim();
+  }
+  if (onRailway) {
+    const dbUrl = getDatabaseUrl();
+    if (dbUrl) {
+      console.warn(
+          '[JWT] Sin JWT_SECRET en Variables: usando secreto derivado de DATABASE_URL. ' +
+          'Opcional: añade JWT_SECRET (32+ caracteres aleatorios) para rotarlo sin tocar la DB.',
+      );
+      return crypto.createHash('sha256').update('pi-faucet:jwt:v1:' + dbUrl).digest('hex');
+    }
     console.error(
-        'Falta JWT_SECRET (mín. 16 caracteres). En Railway: Variables del servicio web → JWT_SECRET.',
+        'Railway: falta DATABASE_URL (referencia al Postgres) y JWT_SECRET. ' +
+        'Configura al menos una de las dos en el servicio web.',
     );
     process.exit(1);
   }
-  console.warn('ADVERTENCIA: define JWT_SECRET (mín. 16 caracteres) en producción.');
+  if (!isProd) {
+    return fromEnv && String(fromEnv).trim().length > 0 ?
+      String(fromEnv).trim() :
+      'dev-only-secret-change-me';
+  }
+  console.error(
+      'Define JWT_SECRET (mín. 16 caracteres), por ejemplo en Variables de Railway.',
+  );
+  process.exit(1);
 }
+
+const jwtSecret = resolveJwtSecret();
 
 const PORT = Number(process.env.PORT) || 3000;
 const app = express();
@@ -67,7 +95,7 @@ function isUuid(s) {
 function signToken(user) {
   return jwt.sign(
       { sub: user.id, role: user.role, email: user.email },
-      JWT_SECRET || 'dev-only-secret-change-me',
+      jwtSecret,
       { expiresIn: '7d' },
   );
 }

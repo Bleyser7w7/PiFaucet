@@ -31,8 +31,10 @@ Abre `http://localhost:3000`.
    - **+ New Variable** → **Add Reference** (o «Variable Reference»).
    - Elige el servicio **Postgres** y la variable **`DATABASE_URL`**.
    - Guarda (quedará algo como `${{ Postgres.DATABASE_URL }}` según el nombre del servicio).
-4. En el mismo servicio web, añade una variable normal **`JWT_SECRET`**: una cadena aleatoria larga (mín. 16 caracteres, mejor 32+).
+4. (Recomendado) Variable **`JWT_SECRET`** en el servicio web: cadena aleatoria (mín. 16 caracteres, mejor 32+). Si no la pones y ya tienes **`DATABASE_URL`** referenciada, la app genera un secreto estable derivado de la base (funciona, pero conviene definir `JWT_SECRET` a medio plazo).
 5. Redeploy si hace falta.
+
+El aviso de npm `Use --omit=dev instead` suele ser inocuo en el build de Railway; no impide el arranque.
 
 La app usa `PORT` automáticamente y sirve `public/` + `/api/*`.
 
