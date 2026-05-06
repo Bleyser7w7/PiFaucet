@@ -1,18 +1,51 @@
 /**
  * Pool PostgreSQL y migración mínima al arrancar.
+ * Railway: referencia DATABASE_URL del servicio Postgres en tu servicio web (ver README).
  */
 
 const { Pool } = require('pg');
 
-const dbUrl = process.env.DATABASE_URL || '';
-const isLocal =
-    dbUrl.includes('localhost') ||
-    dbUrl.includes('127.0.0.1') ||
-    process.env.PGSSLMODE === 'disable';
+/**
+ * Resuelve la URL de conexión desde variables habituales (Railway, Render, local).
+ * @return {string}
+ */
+function getDatabaseUrl() {
+  const direct = [
+    process.env.DATABASE_URL,
+    process.env.DATABASE_PUBLIC_URL,
+    process.env.POSTGRES_URL,
+    process.env.POSTGRES_PRISMA_URL,
+    process.env.POSTGRES_CONNECTION_URL,
+  ].find((v) => v && String(v).trim().length > 0);
+  if (direct) return String(direct).trim();
+
+  const host = process.env.PGHOST || process.env.POSTGRES_HOST;
+  const user = process.env.PGUSER || process.env.POSTGRES_USER;
+  const pass = process.env.PGPASSWORD ?? process.env.POSTGRES_PASSWORD ?? '';
+  const db = process.env.PGDATABASE || process.env.POSTGRES_DATABASE || process.env.POSTGRES_DB;
+  const port = process.env.PGPORT || process.env.POSTGRES_PORT || '5432';
+  if (host && user && db) {
+    const encUser = encodeURIComponent(user);
+    const encPass = encodeURIComponent(String(pass));
+    return `postgresql://${encUser}:${encPass}@${host}:${port}/${db}`;
+  }
+  return '';
+}
+
+const dbUrl = getDatabaseUrl();
+
+function isLocalUrl(url) {
+  if (!url) return true;
+  return (
+    url.includes('localhost') ||
+    url.includes('127.0.0.1') ||
+    process.env.PGSSLMODE === 'disable'
+  );
+}
 
 const pool = new Pool({
-  connectionString: dbUrl,
-  ssl: isLocal ? false : { rejectUnauthorized: false },
+  connectionString: dbUrl || 'postgresql://127.0.0.1:5432/placeholder',
+  ssl: isLocalUrl(dbUrl) ? false : { rejectUnauthorized: false },
 });
 
 const MIGRATION = `
@@ -71,4 +104,4 @@ async function migrate() {
   await pool.query(MIGRATION);
 }
 
-module.exports = { pool, migrate };
+module.exports = { pool, migrate, getDatabaseUrl };

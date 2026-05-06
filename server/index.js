@@ -10,7 +10,7 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { pool, migrate } = require('./db');
+const { pool, migrate, getDatabaseUrl } = require('./db');
 
 const CLAIM_COOLDOWN_MS = 10 * 60 * 1000;
 const REWARD_MIN = 0.01;
@@ -20,7 +20,15 @@ const REFERRAL_BONUS_REFERRED = 0.05;
 const REFERRAL_BONUS_REFERRER = 0.02;
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const onRailway = !!(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID);
+const isProd = process.env.NODE_ENV === 'production' || onRailway;
 if (!JWT_SECRET || JWT_SECRET.length < 16) {
+  if (isProd) {
+    console.error(
+        'Falta JWT_SECRET (mín. 16 caracteres). En Railway: Variables del servicio web → JWT_SECRET.',
+    );
+    process.exit(1);
+  }
   console.warn('ADVERTENCIA: define JWT_SECRET (mín. 16 caracteres) en producción.');
 }
 
@@ -553,8 +561,15 @@ app.get('*', (req, res, next) => {
 });
 
 async function main() {
-  if (!process.env.DATABASE_URL) {
-    console.error('Falta DATABASE_URL. En local, crea un .env (ver .env.example).');
+  const dbUrl = getDatabaseUrl();
+  if (!dbUrl) {
+    console.error(
+        'Falta conexión a PostgreSQL (DATABASE_URL o variables PG*).\n' +
+        '  Local: copia .env.example a .env y define DATABASE_URL.\n' +
+        '  Railway: en el servicio WEB (Node) → Variables → «+ New Variable» →\n' +
+        '    «Variable Reference» → elige tu servicio Postgres → DATABASE_URL.\n' +
+        '  O crea Postgres desde el mismo proyecto y vincúlalo al servicio web.',
+    );
     process.exit(1);
   }
   await migrate();

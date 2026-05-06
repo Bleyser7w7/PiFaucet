@@ -24,13 +24,19 @@ Abre `http://localhost:3000`.
 
 ## Railway
 
-1. Crea un proyecto en Railway y conecta este repo (GitHub).
-2. Añade el plugin **PostgreSQL**; Railway define `DATABASE_URL`.
-3. En **Variables** del servicio Node, añade:
-   - `JWT_SECRET` — cadena larga y aleatoria (mín. 16 caracteres; recomendado 32+).
-4. Deploy: Railway ejecutará `npm install` y `npm start` (ver `package.json`).
+1. Crea un proyecto y despliega este repo (GitHub) como servicio **Node**.
+2. Añade **PostgreSQL** (botón **+ New** → **Database** → **PostgreSQL**).
+3. **Importante:** `DATABASE_URL` se crea en el servicio **Postgres**, no en el web. Debes **referenciarla** en tu app:
+   - Abre tu servicio **web** (el Node) → pestaña **Variables**.
+   - **+ New Variable** → **Add Reference** (o «Variable Reference»).
+   - Elige el servicio **Postgres** y la variable **`DATABASE_URL`**.
+   - Guarda (quedará algo como `${{ Postgres.DATABASE_URL }}` según el nombre del servicio).
+4. En el mismo servicio web, añade una variable normal **`JWT_SECRET`**: una cadena aleatoria larga (mín. 16 caracteres, mejor 32+).
+5. Redeploy si hace falta.
 
-La app escucha en `process.env.PORT` y sirve `public/` + API en `/api/*`.
+La app usa `PORT` automáticamente y sirve `public/` + `/api/*`.
+
+Si sigue diciendo «Falta DATABASE_URL», casi siempre es porque falta el **reference** del Postgres en el servicio web, no porque no exista la base.
 
 ## API (resumen)
 
